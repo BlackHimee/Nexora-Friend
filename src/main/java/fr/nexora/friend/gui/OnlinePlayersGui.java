@@ -31,6 +31,7 @@ public class OnlinePlayersGui extends NexoraGui {
         int pageSize = plugin.configManager().config().getInt("pagination.online-players-per-page", 36);
 
         List<Player> players = plugin.getServer().getOnlinePlayers().stream()
+                .map(Player.class::cast)
                 .filter(p -> !p.getUniqueId().equals(viewer.getUniqueId()))
                 .sorted(Comparator.comparing(Player::getName, String.CASE_INSENSITIVE_ORDER))
                 .toList();

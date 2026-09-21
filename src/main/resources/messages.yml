@@ -1,0 +1,49 @@
+# =========================================
+#  Nexora-Friend messages
+#  Legacy '&' color codes are supported.
+#  Placeholders: %player% %limit% %count% %requests% %time%
+# =========================================
+
+prefix: "&8[&bNexora&8] &r"
+
+generic-error: "&cUne erreur est survenue. Veuillez réessayer."
+no-permission: "&cVous n'avez pas la permission d'effectuer cette action."
+player-only: "&cCette commande est réservée aux joueurs."
+
+friend-added: "&aVous êtes maintenant amis avec &f%player%&a !"
+friend-removed: "&c%player% a été retiré de vos amis."
+friend-removed-by-other: "&c%player% vous a retiré de ses amis."
+
+request-sent: "&aDemande envoyée à &f%player%&a."
+request-received: "&b%player% &7vous a envoyé une demande d'ami."
+request-accepted: "&aVous avez accepté la demande de &f%player%&a."
+request-accepted-target: "&f%player% &aa accepté votre demande d'ami."
+request-denied: "&cVous avez refusé la demande de &f%player%&c."
+request-denied-target: "&f%player% &ca refusé votre demande d'ami."
+request-cancelled: "&eDemande envoyée à &f%player% &eannulée."
+pending-requests-on-join: "&bVous avez &f%count% &bnouvelle(s) demande(s) d'ami en attente."
+
+player-not-found: "&cJoueur introuvable."
+limit-reached: "&cVotre limite de %limit% amis est atteinte."
+target-limit-reached: "&c%player% a atteint sa limite d'amis."
+already-friends: "&eVous êtes déjà amis avec %player%."
+request-already-sent: "&eUne demande est déjà en attente."
+cannot-add-yourself: "&cVous ne pouvez pas vous ajouter vous-même."
+blocked: "&cVous ne pouvez pas effectuer cette action."
+privacy-denied: "&c%player% n'accepte pas les demandes d'ami de votre part."
+blocked-you: "&cCe joueur vous a bloqué."
+you-blocked-them: "&cVous avez bloqué ce joueur."
+request-cooldown: "&cVeuillez patienter avant d'envoyer une nouvelle demande."
+
+player-blocked: "&c%player% a été bloqué."
+player-unblocked: "&a%player% a été débloqué."
+
+friend-connected: "&a● &f%player% &7vient de se connecter."
+friend-disconnected: "&7● &f%player% &7vient de se déconnecter."
+
+confirm-required: "&eVeuillez confirmer cette action."
+
+admin-reload-success: "&aConfiguration de Nexora-Friend rechargée."
+admin-player-not-found: "&cAucune donnée trouvée pour ce joueur."
+admin-friend-removed: "&aLien d'amitié supprimé entre %player% et %friend%."
+admin-friends-cleared: "&aListe d'amis de %player% vidée (%count% amis retirés)."

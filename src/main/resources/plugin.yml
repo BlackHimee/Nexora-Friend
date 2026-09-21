@@ -1,0 +1,79 @@
+name: ${project.name}
+version: ${project.version}
+main: fr.nexora.friend.NexoraFriend
+api-version: "1.21"
+author: Nexora
+description: ${project.description}
+folia-supported: false
+
+softdepend: [LuckPerms, PlaceholderAPI]
+
+commands:
+  social:
+    description: Open the Nexora Social main menu.
+    usage: /social
+    permission: nexora.friend.use
+  socialadmin:
+    description: Nexora-Friend administration commands.
+    usage: /socialadmin <reload|info|friends|remove|clear|debug>
+    permission: nexora.friend.admin
+
+permissions:
+  nexora.friend.use:
+    description: Allows usage of /social.
+    default: true
+  nexora.friend.add:
+    description: Allows sending friend requests.
+    default: true
+  nexora.friend.remove:
+    description: Allows removing friends.
+    default: true
+  nexora.friend.search:
+    description: Allows searching for players.
+    default: true
+  nexora.friend.requests:
+    description: Allows viewing/managing friend requests.
+    default: true
+  nexora.friend.profile:
+    description: Allows viewing profiles.
+    default: true
+  nexora.friend.block:
+    description: Allows blocking/unblocking players.
+    default: true
+  nexora.friend.settings:
+    description: Allows editing social settings.
+    default: true
+
+  nexora.friend.limit.100:
+    description: Grants a friend limit of 100.
+    default: false
+  nexora.friend.limit.300:
+    description: Grants a friend limit of 300.
+    default: false
+  nexora.friend.limit.400:
+    description: Grants a friend limit of 400.
+    default: false
+  nexora.friend.limit.500:
+    description: Grants a friend limit of 500.
+    default: false
+
+  nexora.friend.admin:
+    description: Master administration permission.
+    default: op
+    children:
+      nexora.friend.admin.reload: true
+      nexora.friend.admin.info: true
+      nexora.friend.admin.remove: true
+      nexora.friend.admin.clear: true
+  nexora.friend.admin.reload:
+    description: Allows reloading Nexora-Friend.
+    default: op
+  nexora.friend.admin.info:
+    description: Allows viewing another player's social info.
+    default: op
+  nexora.friend.admin.remove:
+    description: Allows force-removing a friendship.
+    default: op
+  nexora.friend.admin.clear:
+    description: Allows clearing a player's friend list.
+    default: op

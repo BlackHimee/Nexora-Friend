@@ -1,0 +1,176 @@
+# =========================================
+#  Nexora-Friend GUI configuration
+# =========================================
+
+main:
+  title: "&8✦ &bNexora Social"
+  size: 54
+  filler:
+    enabled: true
+    material: BLACK_STAINED_GLASS_PANE
+  buttons:
+    friends:
+      slot: 20
+      material: PLAYER_HEAD
+      name: "&bMes amis"
+      lore:
+        - "&7Consultez votre liste d'amis."
+        - ""
+        - "&eCliquez pour ouvrir"
+    requests:
+      slot: 22
+      material: WRITABLE_BOOK
+      name: "&eDemandes d'amis"
+      lore:
+        - "&7Gérez vos demandes reçues et envoyées."
+        - ""
+        - "&eCliquez pour ouvrir"
+    online:
+      slot: 24
+      material: LIME_DYE
+      name: "&aJoueurs connectés"
+      lore:
+        - "&7Voir les joueurs actuellement en ligne."
+        - ""
+        - "&eCliquez pour ouvrir"
+    search:
+      slot: 31
+      material: COMPASS
+      name: "&bRechercher un joueur"
+      lore:
+        - "&7Recherchez un joueur par pseudo."
+        - ""
+        - "&eCliquez pour ouvrir"
+    profile:
+      slot: 40
+      material: PLAYER_HEAD
+      name: "&dMon profil"
+      lore:
+        - "&7Consultez vos statistiques sociales."
+        - ""
+        - "&eCliquez pour ouvrir"
+    settings:
+      slot: 44
+      material: COMPARATOR
+      name: "&7Paramètres"
+      lore:
+        - "&7Configurez vos préférences sociales."
+        - ""
+        - "&eCliquez pour ouvrir"
+
+navigation:
+  back:
+    slot: 45
+    material: ARROW
+    name: "&c← Retour"
+  home:
+    slot: 49
+    material: NETHER_STAR
+    name: "&6🏠 Menu principal"
+  previous-page:
+    slot: 48
+    material: ARROW
+    name: "&e← Page précédente"
+  next-page:
+    slot: 50
+    material: ARROW
+    name: "&eSuite →"
+  close:
+    slot: 53
+    material: BARRIER
+    name: "&cFermer"
+
+friends:
+  title: "&8✦ &bMes amis"
+  size: 54
+  lore-online: "&7Statut: &a🟢 En ligne"
+  lore-offline: "&7Statut: &c🔴 Hors ligne"
+  lore-last-seen: "&7Dernière connexion: &f%time%"
+
+requests:
+  title: "&8✦ &eDemandes d'amis"
+  size: 27
+  received-slot: 11
+  sent-slot: 15
+  received-material: WRITABLE_BOOK
+  sent-material: PAPER
+
+received-requests:
+  title: "&8✦ &eDemandes reçues"
+  size: 54
+
+sent-requests:
+  title: "&8✦ &eDemandes envoyées"
+  size: 54
+
+online-players:
+  title: "&8✦ &aJoueurs connectés"
+  size: 54
+
+profile:
+  title: "&8✦ Profil de %player%"
+  size: 27
+  head-slot: 13
+  primary-slot: 11
+  secondary-slot: 15
+  block-slot: 16
+  back-slot: 22
+
+request-detail:
+  title-incoming: "&8✦ &eDemande de %player%"
+  title-outgoing: "&8✦ &eDemande envoyée"
+  size: 27
+  head-slot: 13
+  accept-slot: 11
+  deny-slot: 15
+  block-slot: 16
+  cancel-slot: 15
+  back-slot: 22
+
+confirm:
+  title: "&8⚠ Confirmation"
+  size: 27
+  confirm-slot: 11
+  cancel-slot: 15
+  confirm-material: LIME_WOOL
+  cancel-material: RED_WOOL
+
+settings:
+  title: "&8✦ &7Paramètres"
+  size: 45
+  buttons:
+    notifications:
+      slot: 10
+      material: BELL
+      name: "&b🔔 Notifications"
+    online:
+      slot: 12
+      material: LIME_DYE
+      name: "&a🟢 Connexion des amis"
+    offline:
+      slot: 14
+      material: GRAY_DYE
+      name: "&7🔴 Déconnexion des amis"
+    requests:
+      slot: 16
+      material: WRITABLE_BOOK
+      name: "&e📨 Demandes d'amis"
+    add-privacy:
+      slot: 28
+      material: IRON_DOOR
+      name: "&fQui peut m'ajouter ?"
+    profile-privacy:
+      slot: 30
+      material: OAK_DOOR
+      name: "&f👤 Visibilité du profil"
+    blocked:
+      slot: 34
+      material: BARRIER
+      name: "&c🚫 Joueurs bloqués"
+
+blocked-players:
+  title: "&8✦ &cJoueurs bloqués"
+  size: 54
+
+search:
+  title: "&Rechercher un joueur"

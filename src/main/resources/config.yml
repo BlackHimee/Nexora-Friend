@@ -1,0 +1,74 @@
+# =========================================
+#  Nexora-Friend configuration
+# =========================================
+
+debug: false
+
+database:
+  # SQLITE, MYSQL or MARIADB
+  type: SQLITE
+
+  sqlite:
+    file: database.db
+
+  mysql:
+    host: localhost
+    port: 3306
+    database: nexora_friend
+    username: root
+    password: ""
+    useSSL: false
+    pool:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout-ms: 10000
+      idle-timeout-ms: 600000
+      max-lifetime-ms: 1800000
+
+friends:
+  # Default limit applied when no nexora.friend.limit.* permission is granted.
+  default-limit: 50
+  # Highest matching permission wins automatically.
+  limits:
+    "nexora.friend.limit.100": 100
+    "nexora.friend.limit.300": 300
+    "nexora.friend.limit.400": 400
+    "nexora.friend.limit.500": 500
+
+requests:
+  request-cooldown-seconds: 5
+  # Automatically notify a player of pending requests received while offline.
+  notify-pending-on-join: true
+
+notifications:
+  friend-request-received: true
+  friend-request-accepted: true
+  friend-request-denied: true
+  friend-online: true
+  friend-offline: true
+  friend-removed: true
+
+privacy:
+  default-add-privacy: EVERYONE      # EVERYONE, FRIENDS_OF_FRIENDS, NOBODY
+  default-profile-privacy: EVERYONE  # EVERYONE, FRIENDS_ONLY, NOBODY
+
+sounds:
+  enabled: true
+  gui-open: BLOCK_CHEST_OPEN
+  button-click: UI_BUTTON_CLICK
+  request-sent: ENTITY_EXPERIENCE_ORB_PICKUP
+  request-received: ENTITY_PLAYER_LEVELUP
+  request-accepted: ENTITY_PLAYER_LEVELUP
+  request-denied: BLOCK_ANVIL_LAND
+  friend-removed: BLOCK_ANVIL_LAND
+  error: ENTITY_VILLAGER_NO
+
+pagination:
+  friends-per-page: 36
+  online-players-per-page: 36
+
+placeholderapi:
+  enabled: true
+
+luckperms:
+  enabled: true

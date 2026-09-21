@@ -1,0 +1,17 @@
+package fr.nexora.friend.model;
+
+public enum RequestResult {
+    SUCCESS,
+    SELF,
+    ALREADY_FRIENDS,
+    ALREADY_PENDING,
+    INCOMING_PENDING,
+    TARGET_BLOCKED_YOU,
+    YOU_BLOCKED_TARGET,
+    LIMIT_REACHED,
+    TARGET_LIMIT_REACHED,
+    COOLDOWN,
+    PRIVACY_DENIED,
+    NOT_FOUND,
+    ERROR
+}

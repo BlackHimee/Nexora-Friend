@@ -1,9 +1,9 @@
-name: ${project.name}
-version: ${project.version}
+name: Nexora-Friend
+version: 1.0.0
 main: fr.nexora.friend.NexoraFriend
 api-version: "1.21"
 author: Nexora
-description: ${project.description}
+description: Complete social / friend system for Paper 1.21+
 folia-supported: false
 
 softdepend: [LuckPerms, PlaceholderAPI]

@@ -8,9 +8,33 @@ profiles, blocking and per-player privacy/notification settings. All data is
 UUID-keyed, persisted asynchronously to SQLite or MySQL/MariaDB, and cached
 in memory so the GUIs never block the main thread.
 
+## Building
+
+Both build systems are provided and kept in sync - use whichever you have.
+
+**Gradle:**
+
+```bash
+./gradlew build
+```
+
+**Maven:**
+
+```bash
+mvn clean package
+```
+
+Either produces the shaded jar at `build/libs/Nexora-Friend-1.0.0.jar`
+(Gradle) or `target/Nexora-Friend-1.0.0.jar` (Maven). Both need outbound
+access to `repo.papermc.io`, `repo.lucko.me`, `repo.extendedclip.com` and
+Maven Central - if any of those are firewalled off, the dependency
+resolution step will fail with a 403/connection error before it ever
+reaches your code.
+
 ## Installation
 
-1. Drop `Nexora-Friend-1.0.0.jar` into your server's `plugins/` folder.
+1. Drop `Nexora-Friend-1.0.0.jar` (from `build/libs/` or `target/`) into
+   your server's `plugins/` folder.
 2. Start the server once to generate `config.yml`, `messages.yml` and
    `gui.yml` inside `plugins/Nexora-Friend/`.
 3. Edit the configuration files as needed (database type, permissions-based

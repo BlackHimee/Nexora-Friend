@@ -6,4 +6,3 @@ build/
 *.iml
 .vscode/
 .DS_Store
-resourcepack/*.zip

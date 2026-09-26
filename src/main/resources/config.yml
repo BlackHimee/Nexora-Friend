@@ -72,3 +72,17 @@ placeholderapi:
 
 luckperms:
   enabled: true
+
+# Cross-server sync: only takes effect when database.type is MYSQL or MARIADB
+# (a shared network database is what makes this possible - SQLite is a local
+# file and can't be safely shared between multiple server processes).
+# Every server in the network must point at the SAME database and each must
+# have its OWN unique server-id below.
+network:
+  enabled: false
+  server-id: "server1"
+  # How often (in ticks, 20 = 1 second) each server checks for events other
+  # servers published. Lower = more real-time, higher = less database load.
+  poll-interval-ticks: 20
+  # How long processed events are kept before being purged (cleanup runs hourly).
+  event-retention-hours: 24

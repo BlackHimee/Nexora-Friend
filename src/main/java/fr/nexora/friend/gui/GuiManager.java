@@ -53,4 +53,16 @@ public class GuiManager {
     public void clear(UUID uuid) {
         history.remove(uuid);
     }
+
+    /**
+     * Rebuilds whatever Nexora-Friend GUI this player currently has open, in
+     * place, without changing their navigation stack. Used to reflect a
+     * cross-server (or otherwise external) change the instant it's known,
+     * rather than waiting for the player's next click.
+     */
+    public void refreshOpen(Player player) {
+        if (player.getOpenInventory().getTopInventory().getHolder() instanceof NexoraGui gui) {
+            gui.refresh();
+        }
+    }
 }

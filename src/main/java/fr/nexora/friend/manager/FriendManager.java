@@ -1,6 +1,7 @@
 package fr.nexora.friend.manager;
 
 import fr.nexora.friend.database.dao.FriendDao;
+import fr.nexora.friend.model.NetworkEventType;
 import fr.nexora.friend.util.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ public class FriendManager {
     private final PermissionManager permissionManager;
     private final NotificationManager notifications;
     private final Scheduler scheduler;
+    private NetworkManager networkManager;
 
     public FriendManager(FriendDao friendDao, CacheManager cache, PermissionManager permissionManager,
                           NotificationManager notifications, Scheduler scheduler) {
@@ -26,6 +28,11 @@ public class FriendManager {
         this.permissionManager = permissionManager;
         this.notifications = notifications;
         this.scheduler = scheduler;
+    }
+
+    /** Late-bound to break the FriendManager <-> NetworkManager construction cycle. */
+    public void setNetworkManager(NetworkManager networkManager) {
+        this.networkManager = networkManager;
     }
 
     public CompletableFuture<Void> loadForPlayer(UUID uuid) {
@@ -78,6 +85,9 @@ public class FriendManager {
                     notifications.friendRemovedByOther(targetPlayer, actorName);
                 }
             });
+            if (networkManager != null) {
+                networkManager.publish(NetworkEventType.FRIEND_REMOVED, actor, target);
+            }
         });
     }
 
@@ -85,6 +95,9 @@ public class FriendManager {
         return friendDao.removeFriendship(a, b).thenRun(() -> {
             cache.removeFriend(a, b);
             cache.removeFriend(b, a);
+            if (networkManager != null) {
+                networkManager.publish(NetworkEventType.FRIEND_REMOVED, a, b);
+            }
         });
     }
 
@@ -92,6 +105,9 @@ public class FriendManager {
         return friendDao.getFriends(player).thenCompose(friends -> friendDao.removeAllFriendships(player).thenApply(v -> {
             for (UUID friend : friends) {
                 cache.removeFriend(friend, player);
+                if (networkManager != null) {
+                    networkManager.publish(NetworkEventType.FRIEND_REMOVED, player, friend);
+                }
             }
             cache.removeFriends(player);
             return friends.size();

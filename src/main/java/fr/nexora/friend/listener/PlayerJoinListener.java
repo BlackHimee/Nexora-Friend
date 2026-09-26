@@ -1,6 +1,7 @@
 package fr.nexora.friend.listener;
 
 import fr.nexora.friend.NexoraFriend;
+import fr.nexora.friend.model.NetworkEventType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,5 +52,8 @@ public class PlayerJoinListener implements Listener {
                 plugin.notificationManager().friendOnline(friend, player.getName());
             }
         }
+
+        plugin.cacheManager().setNetworkOnline(uuid, true);
+        plugin.networkManager().publish(NetworkEventType.PLAYER_ONLINE, uuid, null);
     }
 }

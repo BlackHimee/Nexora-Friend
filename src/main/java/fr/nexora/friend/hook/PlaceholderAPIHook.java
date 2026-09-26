@@ -52,7 +52,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             case "count" -> String.valueOf(plugin.friendManager().getFriendCount(uuid));
             case "limit" -> player.getPlayer() != null ? String.valueOf(plugin.friendManager().getLimit(player.getPlayer())) : "";
             case "online" -> String.valueOf(plugin.friendManager().getFriends(uuid).stream()
-                    .filter(friend -> Bukkit.getPlayer(friend) != null)
+                    .filter(friend -> plugin.profileManager().isOnline(friend))
                     .count());
             case "requests" -> String.valueOf(plugin.requestManager().getIncoming(uuid).size());
             case "status" -> {

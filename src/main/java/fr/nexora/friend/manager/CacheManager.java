@@ -23,6 +23,7 @@ public class CacheManager {
     private final Map<UUID, List<FriendRequest>> incomingRequests = new ConcurrentHashMap<>();
     private final Map<UUID, List<FriendRequest>> outgoingRequests = new ConcurrentHashMap<>();
     private final Map<UUID, Long> requestCooldowns = new ConcurrentHashMap<>();
+    private final Map<UUID, Boolean> networkPresence = new ConcurrentHashMap<>();
 
     // ---- profiles ----
 
@@ -135,6 +136,16 @@ public class CacheManager {
 
     public void markRequestSent(UUID uuid) {
         requestCooldowns.put(uuid, System.currentTimeMillis());
+    }
+
+    // ---- network-wide presence (updated by local join/quit and by remote PLAYER_ONLINE/OFFLINE events) ----
+
+    public boolean isNetworkOnline(UUID uuid) {
+        return networkPresence.getOrDefault(uuid, Boolean.FALSE);
+    }
+
+    public void setNetworkOnline(UUID uuid, boolean online) {
+        networkPresence.put(uuid, online);
     }
 
     // ---- session lifecycle ----

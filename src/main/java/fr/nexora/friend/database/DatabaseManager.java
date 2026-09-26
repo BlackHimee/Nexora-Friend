@@ -3,6 +3,7 @@ package fr.nexora.friend.database;
 import fr.nexora.friend.NexoraFriend;
 import fr.nexora.friend.database.dao.BlockDao;
 import fr.nexora.friend.database.dao.FriendDao;
+import fr.nexora.friend.database.dao.NetworkEventDao;
 import fr.nexora.friend.database.dao.ProfileDao;
 import fr.nexora.friend.database.dao.RequestDao;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -72,11 +73,13 @@ public class DatabaseManager {
     private final NexoraFriend plugin;
     private Database database;
     private ExecutorService executor;
+    private boolean mysql;
 
     private FriendDao friendDao;
     private RequestDao requestDao;
     private BlockDao blockDao;
     private ProfileDao profileDao;
+    private NetworkEventDao networkEventDao;
 
     public DatabaseManager(NexoraFriend plugin) {
         this.plugin = plugin;
@@ -85,11 +88,9 @@ public class DatabaseManager {
     public void init() throws Exception {
         FileConfiguration config = plugin.configManager().config();
         String type = config.getString("database.type", "SQLITE").trim().toUpperCase();
+        this.mysql = type.equals("MYSQL") || type.equals("MARIADB");
 
-        this.database = switch (type) {
-            case "MYSQL", "MARIADB" -> buildMySQL(config);
-            default -> buildSQLite(config);
-        };
+        this.database = mysql ? buildMySQL(config) : buildSQLite(config);
 
         database.connect();
         createSchema();
@@ -106,8 +107,14 @@ public class DatabaseManager {
         this.requestDao = new RequestDao(database.dataSource(), executor);
         this.blockDao = new BlockDao(database.dataSource(), executor);
         this.profileDao = new ProfileDao(database.dataSource(), executor);
+        this.networkEventDao = new NetworkEventDao(database.dataSource(), executor);
 
         plugin.getLogger().info("Database connection established (" + type + ").");
+    }
+
+    /** Cross-server sync only makes sense against a shared network database. */
+    public boolean supportsNetworkSync() {
+        return mysql;
     }
 
     private Database buildSQLite(FileConfiguration config) {
@@ -144,6 +151,24 @@ public class DatabaseManager {
                     // Index already exists - not all supported databases accept "IF NOT EXISTS" here.
                 }
             }
+
+            if (mysql) {
+                statement.execute("""
+                        CREATE TABLE IF NOT EXISTS nf_network_events (
+                            id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                            event_type VARCHAR(32) NOT NULL,
+                            origin_server VARCHAR(64) NOT NULL,
+                            player_a VARCHAR(36) NOT NULL,
+                            player_b VARCHAR(36) NULL,
+                            created_at BIGINT NOT NULL
+                        )
+                        """);
+                try {
+                    statement.execute("CREATE INDEX idx_nf_network_events_created ON nf_network_events (created_at)");
+                } catch (SQLException ignored) {
+                    // Index already exists.
+                }
+            }
         }
     }
 
@@ -170,6 +195,10 @@ public class DatabaseManager {
 
     public ProfileDao profileDao() {
         return profileDao;
+    }
+
+    public NetworkEventDao networkEventDao() {
+        return networkEventDao;
     }
 
     public ExecutorService executor() {

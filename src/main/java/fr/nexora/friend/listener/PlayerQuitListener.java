@@ -1,6 +1,7 @@
 package fr.nexora.friend.listener;
 
 import fr.nexora.friend.NexoraFriend;
+import fr.nexora.friend.model.NetworkEventType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,5 +33,8 @@ public class PlayerQuitListener implements Listener {
         plugin.profileManager().markOffline(uuid);
         plugin.guiManager().clear(uuid);
         plugin.cacheManager().unloadPlayer(uuid);
+
+        plugin.cacheManager().setNetworkOnline(uuid, false);
+        plugin.networkManager().publish(NetworkEventType.PLAYER_OFFLINE, uuid, null);
     }
 }

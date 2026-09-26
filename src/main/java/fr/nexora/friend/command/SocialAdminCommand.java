@@ -178,6 +178,8 @@ public class SocialAdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(MessageUtils.color("&7LuckPerms hook: &f" + (plugin.luckPermsHook() != null)));
         sender.sendMessage(MessageUtils.color("&7PlaceholderAPI hook: &f" + plugin.placeholderApiEnabled()));
         sender.sendMessage(MessageUtils.color("&7Online players tracked: &f" + Bukkit.getOnlinePlayers().size()));
+        sender.sendMessage(MessageUtils.color("&7Network sync: &f" + plugin.networkManager().isEnabled()
+                + (plugin.networkManager().isEnabled() ? " &7(server-id: &f" + plugin.networkManager().serverId() + "&7)" : "")));
     }
 
     private java.util.concurrent.CompletableFuture<Optional<UUID>> resolveUuid(String name) {

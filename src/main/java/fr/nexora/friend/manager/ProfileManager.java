@@ -94,4 +94,14 @@ public class ProfileManager {
     public void save(SocialProfile profile) {
         profileDao.upsert(profile);
     }
+
+    /**
+     * Whether this player is online anywhere - this server, or (when network
+     * sync is active) another server in the network. Prefer this over a bare
+     * {@code Bukkit.getPlayer(uuid) != null} check for anything a friend on a
+     * different server should see correctly.
+     */
+    public boolean isOnline(UUID uuid) {
+        return Bukkit.getPlayer(uuid) != null || cache.isNetworkOnline(uuid);
+    }
 }

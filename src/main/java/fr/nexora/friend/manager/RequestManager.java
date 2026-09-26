@@ -3,6 +3,7 @@ package fr.nexora.friend.manager;
 import fr.nexora.friend.database.dao.RequestDao;
 import fr.nexora.friend.model.AddPrivacy;
 import fr.nexora.friend.model.FriendRequest;
+import fr.nexora.friend.model.NetworkEventType;
 import fr.nexora.friend.model.RelationState;
 import fr.nexora.friend.model.RequestResult;
 import fr.nexora.friend.model.SocialProfile;
@@ -27,6 +28,7 @@ public class RequestManager {
     private final NotificationManager notifications;
     private final ConfigManager configManager;
     private final Scheduler scheduler;
+    private NetworkManager networkManager;
 
     public RequestManager(RequestDao requestDao, CacheManager cache, FriendManager friendManager,
                            BlockManager blockManager, ProfileManager profileManager,
@@ -39,6 +41,11 @@ public class RequestManager {
         this.notifications = notifications;
         this.configManager = configManager;
         this.scheduler = scheduler;
+    }
+
+    /** Late-bound to break the RequestManager <-> NetworkManager construction cycle. */
+    public void setNetworkManager(NetworkManager networkManager) {
+        this.networkManager = networkManager;
     }
 
     public CompletableFuture<Void> loadForPlayer(UUID uuid) {
@@ -93,9 +100,6 @@ public class RequestManager {
         if (blockManager.isBlocked(requesterUuid, targetUuid)) {
             return CompletableFuture.completedFuture(RequestResult.YOU_BLOCKED_TARGET);
         }
-        if (blockManager.isBlocked(targetUuid, requesterUuid)) {
-            return CompletableFuture.completedFuture(RequestResult.TARGET_BLOCKED_YOU);
-        }
         if (friendManager.areFriends(requesterUuid, targetUuid)) {
             return CompletableFuture.completedFuture(RequestResult.ALREADY_FRIENDS);
         }
@@ -116,23 +120,31 @@ public class RequestManager {
             return CompletableFuture.completedFuture(RequestResult.TARGET_LIMIT_REACHED);
         }
 
-        return profileManager.fetch(targetUuid).thenCompose(targetProfileOpt -> {
-            AddPrivacy privacy = targetProfileOpt.map(SocialProfile::addPrivacy).orElse(AddPrivacy.EVERYONE);
-
-            if (privacy == AddPrivacy.NOBODY) {
-                return CompletableFuture.completedFuture(RequestResult.PRIVACY_DENIED);
+        // Queried straight from the database rather than the local cache: the target might not
+        // be (or have ever been) loaded on this server, e.g. in a networked multi-server setup.
+        return blockManager.isBlockedInDatabase(targetUuid, requesterUuid).thenCompose(blockedByTarget -> {
+            if (Boolean.TRUE.equals(blockedByTarget)) {
+                return CompletableFuture.completedFuture(RequestResult.TARGET_BLOCKED_YOU);
             }
 
-            if (privacy == AddPrivacy.FRIENDS_OF_FRIENDS) {
-                return checkSharedFriend(requesterUuid, targetUuid).thenCompose(shared -> {
-                    if (!shared) {
-                        return CompletableFuture.completedFuture(RequestResult.PRIVACY_DENIED);
-                    }
-                    return createAndSendRequest(requester, targetUuid, targetPlayer);
-                });
-            }
+            return profileManager.fetch(targetUuid).thenCompose(targetProfileOpt -> {
+                AddPrivacy privacy = targetProfileOpt.map(SocialProfile::addPrivacy).orElse(AddPrivacy.EVERYONE);
 
-            return createAndSendRequest(requester, targetUuid, targetPlayer);
+                if (privacy == AddPrivacy.NOBODY) {
+                    return CompletableFuture.completedFuture(RequestResult.PRIVACY_DENIED);
+                }
+
+                if (privacy == AddPrivacy.FRIENDS_OF_FRIENDS) {
+                    return checkSharedFriend(requesterUuid, targetUuid).thenCompose(shared -> {
+                        if (!shared) {
+                            return CompletableFuture.completedFuture(RequestResult.PRIVACY_DENIED);
+                        }
+                        return createAndSendRequest(requester, targetUuid, targetPlayer);
+                    });
+                }
+
+                return createAndSendRequest(requester, targetUuid, targetPlayer);
+            });
         });
     }
 
@@ -159,6 +171,10 @@ public class RequestManager {
                     notifications.requestReceived(targetPlayer, requester.getName());
                 }
             });
+
+            if (networkManager != null) {
+                networkManager.publish(NetworkEventType.REQUEST_SENT, requesterUuid, targetUuid);
+            }
 
             return RequestResult.SUCCESS;
         });
@@ -197,6 +213,9 @@ public class RequestManager {
                         }
                         notifications.friendAdded(target, requesterName);
                     });
+                    if (networkManager != null) {
+                        networkManager.publish(NetworkEventType.REQUEST_ACCEPTED, requesterUuid, targetUuid);
+                    }
                     return RequestResult.SUCCESS;
                 });
     }
@@ -226,6 +245,9 @@ public class RequestManager {
                 }
                 notifications.requestDeniedSelf(target, requesterName);
             });
+            if (networkManager != null) {
+                networkManager.publish(NetworkEventType.REQUEST_DENIED, requesterUuid, targetUuid);
+            }
             return RequestResult.SUCCESS;
         });
     }
@@ -254,6 +276,9 @@ public class RequestManager {
                 }
                 notifications.requestCancelled(requester, targetName);
             });
+            if (networkManager != null) {
+                networkManager.publish(NetworkEventType.REQUEST_CANCELLED, requesterUuid, targetUuid);
+            }
             return RequestResult.SUCCESS;
         });
     }

@@ -40,7 +40,7 @@ public class FriendsGui extends NexoraGui {
 
         List<UUID> friends = new ArrayList<>(plugin.friendManager().getFriends(viewer.getUniqueId()));
         friends.sort(Comparator
-                .comparing((UUID u) -> Bukkit.getPlayer(u) == null)
+                .comparing((UUID u) -> !plugin.profileManager().isOnline(u))
                 .thenComparing(this::displayNameFor, String.CASE_INSENSITIVE_ORDER));
 
         int pageCount = Pagination.pageCount(friends.size(), pageSize);
@@ -76,11 +76,11 @@ public class FriendsGui extends NexoraGui {
     }
 
     private ItemStack buildFriendHead(UUID friendUuid) {
-        Player online = Bukkit.getPlayer(friendUuid);
+        boolean online = plugin.profileManager().isOnline(friendUuid);
         String name = displayNameFor(friendUuid);
 
         List<Component> lore = new ArrayList<>();
-        if (online != null) {
+        if (online) {
             lore.add(MessageUtils.color(guiConfig().getString("friends.lore-online", "&7Statut: &a&lEn ligne")));
         } else {
             lore.add(MessageUtils.color(guiConfig().getString("friends.lore-offline", "&7Statut: &c&lHors ligne")));

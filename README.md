@@ -117,12 +117,58 @@ Default out of the box - stores everything in
 to MySQL/MariaDB for larger networks or multi-server setups sharing one
 friend database.
 
+### Cross-server sync (network mode)
+
+If every server in your network points at the **same** MySQL/MariaDB
+database, friend/request/block data is already shared and consistent -
+that part needs nothing extra. `network.enabled` adds the missing piece:
+**near-real-time propagation** so a friend request, accept, deny, cancel,
+removal, block or online/offline change made on one server is reflected
+**instantly** on every other server - the affected player's friends list,
+profile view or requests screen refreshes live if they have it open, right
+down to notifications ("X just came online") firing across the whole
+network instead of only on the server that player is physically on.
+
+```yaml
+network:
+  enabled: true
+  server-id: "lobby"        # MUST be unique per server
+  poll-interval-ticks: 20   # 20 = check every ~1s; lower = more real-time, more DB load
+  event-retention-hours: 24
+```
+
+How it works: every server writes a row to an `nf_network_events` table
+whenever it makes a change, and every server polls that same table on the
+configured interval, applying anything another server produced (and
+ignoring its own rows, since those were already applied locally). No Redis,
+no proxy plugin messaging channel, no extra infrastructure - just the MySQL
+database you already have. `/socialadmin debug` shows whether it's active
+and this server's `server-id`.
+
+Requirements / limitations:
+- **MySQL or MariaDB only.** If `network.enabled: true` is set while
+  `database.type: SQLITE`, the plugin logs a warning and runs in
+  single-server mode instead (SQLite is a local file, not something
+  multiple server processes can safely share).
+- Every server needs a **different** `server-id`, or they'll silently
+  ignore each other's events (each server skips events whose `server-id`
+  matches its own, assuming it already applied them).
+- Not instant-instant: expect propagation within one `poll-interval-ticks`
+  window (default ~1s), not sub-tick.
+- A friend's permission-based friend limit isn't enforced when they're
+  online on a *different* server than the one handling the request (limits
+  need a live `Player` to check permissions against, which isn't available
+  for someone connected elsewhere in the network) - it's still enforced
+  normally whenever the limit check can run on the same server as that
+  player.
+
 ## Architecture
 
 ```
 gui/            Inventory GUIs (NexoraGui base class, GuiManager navigation stack)
 manager/        Business logic: FriendManager, RequestManager, BlockManager,
-                ProfileManager, NotificationManager, PermissionManager, CacheManager
+                ProfileManager, NotificationManager, PermissionManager, CacheManager,
+                NetworkManager (cross-server sync, MySQL/MariaDB only)
 database/       HikariCP-backed SQLite/MySQL implementations + async DAOs
 model/          Friend, FriendRequest, Block, SocialProfile, enums
 listener/       Inventory security + join/quit data loading

@@ -13,6 +13,7 @@ import fr.nexora.friend.manager.BlockManager;
 import fr.nexora.friend.manager.CacheManager;
 import fr.nexora.friend.manager.ConfigManager;
 import fr.nexora.friend.manager.FriendManager;
+import fr.nexora.friend.manager.NetworkManager;
 import fr.nexora.friend.manager.NotificationManager;
 import fr.nexora.friend.manager.PermissionManager;
 import fr.nexora.friend.manager.ProfileManager;
@@ -41,6 +42,7 @@ public final class NexoraFriend extends JavaPlugin {
     private FriendManager friendManager;
     private BlockManager blockManager;
     private RequestManager requestManager;
+    private NetworkManager networkManager;
 
     private GuiManager guiManager;
 
@@ -76,6 +78,13 @@ public final class NexoraFriend extends JavaPlugin {
 
         this.guiManager = new GuiManager(this);
 
+        this.networkManager = new NetworkManager(this, databaseManager.networkEventDao(), cacheManager,
+                friendManager, notificationManager, profileManager, guiManager);
+        friendManager.setNetworkManager(networkManager);
+        requestManager.setNetworkManager(networkManager);
+        blockManager.setNetworkManager(networkManager);
+        networkManager.start();
+
         registerListeners();
         registerCommands();
 
@@ -90,6 +99,9 @@ public final class NexoraFriend extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (networkManager != null) {
+            networkManager.stop();
+        }
         if (databaseManager != null) {
             databaseManager.shutdown();
         }
@@ -129,6 +141,14 @@ public final class NexoraFriend extends JavaPlugin {
 
     public ConfigManager configManager() {
         return configManager;
+    }
+
+    public DatabaseManager databaseManager() {
+        return databaseManager;
+    }
+
+    public NetworkManager networkManager() {
+        return networkManager;
     }
 
     public Scheduler scheduler() {

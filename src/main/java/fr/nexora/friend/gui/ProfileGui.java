@@ -6,7 +6,6 @@ import fr.nexora.friend.model.RequestResult;
 import fr.nexora.friend.util.ItemBuilder;
 import fr.nexora.friend.util.MessageUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,7 +37,7 @@ public class ProfileGui extends NexoraGui {
             inventory.clear();
         }
 
-        boolean online = Bukkit.getPlayer(target) != null;
+        boolean online = plugin.profileManager().isOnline(target);
         int friendCount = plugin.friendManager().getFriendCount(target);
 
         List<Component> headLore = new ArrayList<>();
